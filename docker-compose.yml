@@ -1,0 +1,20 @@
+services:
+  app:
+    build: .
+    ports:
+      - 3000:3000
+    volumes:
+      - ./:/app/
+    depends_on:
+      - chromadb
+
+  chromadb:
+    image: ghcr.io/chroma-core/chroma:latest
+    ports:
+      - 8000:8000
+    volumes:
+      - index_data:/chroma/.chroma/index
+
+volumes:
+  index_data:
+    driver: local
