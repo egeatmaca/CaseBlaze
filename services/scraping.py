@@ -1,9 +1,10 @@
+import io
 import os
 import uuid
+from PyPDF2 import PdfReader
 import requests
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
-
 
 class CaseScraper:
     base_url = 'https://juris.bundesgerichtshof.de/cgi-bin/rechtsprechung/'
@@ -29,31 +30,41 @@ class CaseScraper:
             document_link_elements = self.webdriver.find_elements(By.CSS_SELECTOR, 'a.doklink')
             document_links = []
             for link in document_link_elements:
-                document_links.append([link.get_attribute('innerHTML'), link.get_attribute('href')])
+                document_links.append(link.get_attribute('href'))
 
             next_page_button = self.webdriver.find_element(By.CSS_SELECTOR, 'td.rechts')
             if next_page_button:
                 next_page_button.click()
-                print('Next page button clicked!')
             else:
                 break
 
         return document_links
     
     def download_document(self, document_link):
+        # Get pdf link
         self.webdriver.get(document_link)
         pdf_embed = self.webdriver.find_element(By.CSS_SELECTOR, 'iframe')
         pdf_link = pdf_embed.get_attribute('src')
         
+        # Download pdf
         response = requests.get(pdf_link)
-        document_path = os.path.join(self.documents_dir, str(uuid.uuid4())+'.pdf')
-        with open(document_path, 'wb') as pdf:
-            pdf.write(response.content)
+        pdf_io = io.BytesIO(response.content)
+
+        # Extract text from pdf
+        pdf = PdfReader(pdf_io)
+        document = ''
+        for page in pdf.pages:
+            document += page.extract_text()
+
+        # Save extracted text
+        document_path = os.path.join(self.documents_dir, str(uuid.uuid4())+'.txt')
+        with open(document_path, 'w') as document_txt:
+            document_txt.write(document)
 
     def scrape_cases(self, search_query='Mietrecht', search_pages=10):
         os.makedirs(self.documents_dir, exist_ok=True)
         document_links = self.get_document_links(search_query, search_pages)
-        for doc_name, doc_link in document_links:
+        for doc_link in document_links:
             self.download_document(doc_link)
 
 
