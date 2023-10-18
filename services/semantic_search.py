@@ -10,7 +10,7 @@ class SemanticSearch:
                  host: str = None, 
                  port: int = None, 
                  collection: str = 'documents',
-                 model_name: str = 'all-mpnet-base-v2',
+                 model_name: str = 'T-Systems-onsite/cross-en-de-roberta-sentence-transformer',
                  similarity: str = 'cosine'):
         
         host = host if host else os.environ.get('CHROMADB_HOST')
@@ -32,9 +32,9 @@ class SemanticSearch:
 
         self.model = SentenceTransformer(model_name)
 
-    def add(self, documents: list[str]):
+    def add(self, documents: list[str], ids: list[str] = None):
         embeddings = [self.model.encode(doc).tolist() for doc in documents]
-        ids = [str(uuid.uuid4()) for _ in range(len(documents))]
+        ids = [str(uuid.uuid4()) for _ in range(len(documents))] if not ids else ids
         self.collection.add(documents=documents, embeddings=embeddings, ids=ids)
 
     def query(self, query_text: str, n_results: int = 1):

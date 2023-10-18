@@ -7,7 +7,7 @@ nltk.download('punkt')
 
 class ExtractiveSummarizer:
 
-    def __init__(self, model_name='all-mpnet-base-v2') -> None:
+    def __init__(self, model_name='T-Systems-onsite/cross-en-de-roberta-sentence-transformer') -> None:
         self.model = SentenceTransformer(model_name)
 
     def pagerank_scores(self, graph_matrix, damping_factor=0.85, max_iterations=100, tol=1e-6):

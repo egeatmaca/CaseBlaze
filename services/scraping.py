@@ -40,7 +40,7 @@ class CaseScraper:
 
         return document_links
     
-    def download_document(self, document_link):
+    def save_document(self, document_link):
         # Get pdf link
         self.webdriver.get(document_link)
         pdf_embed = self.webdriver.find_element(By.CSS_SELECTOR, 'iframe')
@@ -56,16 +56,22 @@ class CaseScraper:
         for page in pdf.pages:
             document += page.extract_text()
 
+        # Merge line breaks
+        document = document.replace('-\n', '')
+
         # Save extracted text
         document_path = os.path.join(self.documents_dir, str(uuid.uuid4())+'.txt')
-        with open(document_path, 'w') as document_txt:
+        with open(document_path, 'w', encoding='utf-8') as document_txt:
             document_txt.write(document)
 
     def scrape_cases(self, search_query='Mietrecht', search_pages=10):
         os.makedirs(self.documents_dir, exist_ok=True)
+        
         document_links = self.get_document_links(search_query, search_pages)
         for doc_link in document_links:
-            self.download_document(doc_link)
+            self.save_document(doc_link)
+
+        self.webdriver.close()
 
 
 if __name__ == '__main__':
