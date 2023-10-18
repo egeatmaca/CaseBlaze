@@ -1,6 +1,5 @@
 import io
 import os
-import uuid
 from PyPDF2 import PdfReader
 import requests
 from selenium.webdriver import Firefox
@@ -34,11 +33,11 @@ class CaseScraper:
         search_form_input.send_keys(search_query)
         search_form_button.click()
         
+        document_links = {}
         for _ in range(search_pages):
             document_link_elements = self.webdriver.find_elements(By.CSS_SELECTOR, 'a.doklink')
-            document_links = []
             for link in document_link_elements:
-                document_links.append(link.get_attribute('href'))
+                document_links[link.get_attribute('innerText')] = link.get_attribute('href')
 
             next_page_button = self.webdriver.find_element(By.CSS_SELECTOR, 'td.rechts')
             if next_page_button:
@@ -48,7 +47,7 @@ class CaseScraper:
 
         return document_links
     
-    def save_document(self, document_link):
+    def save_document(self, document_name, document_link):
         # Get pdf link
         self.webdriver.get(document_link)
         pdf_embed = self.webdriver.find_element(By.CSS_SELECTOR, 'iframe')
@@ -68,7 +67,8 @@ class CaseScraper:
         document = document.replace('-\n', '')
 
         # Save extracted text
-        document_path = os.path.join(self.documents_dir, str(uuid.uuid4())+'.txt')
+        document_name = document_name.replace('/', '-')
+        document_path = os.path.join(self.documents_dir, document_name+'.txt')
         with open(document_path, 'w', encoding='utf-8') as document_txt:
             document_txt.write(document)
 
@@ -76,8 +76,8 @@ class CaseScraper:
         os.makedirs(self.documents_dir, exist_ok=True)
         
         document_links = self.get_document_links(search_query, search_pages)
-        for doc_link in document_links:
-            self.save_document(doc_link)
+        for doc_name, doc_link in document_links.items():
+            self.save_document(doc_name, doc_link)
 
         self.webdriver.close()
 
