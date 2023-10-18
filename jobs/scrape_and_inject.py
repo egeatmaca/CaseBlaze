@@ -11,5 +11,5 @@ def scrape_and_inject():
     for doc_name in os.listdir(scraper.documents_dir):
         doc_path = os.path.join(scraper.documents_dir, doc_name)
         doc_id = doc_name.replace('.txt', '')
-        with open(doc_path, 'r', encoding='utf-8') as doc:
+        with open(doc_path, 'r', encoding='utf-8', errors='ignore') as doc:
             semantic_search.add([doc.read()], [doc_id])

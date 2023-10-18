@@ -4,14 +4,22 @@ import uuid
 from PyPDF2 import PdfReader
 import requests
 from selenium.webdriver import Firefox
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.common.by import By
+from webdriver_manager.firefox import GeckoDriverManager
 
 class CaseScraper:
     base_url = 'https://juris.bundesgerichtshof.de/cgi-bin/rechtsprechung/'
     list_url = base_url + 'list.py?Gericht=bgh&Art=en&Datum=Aktuell&Sort=12288'
 
     def __init__(self, documents_dir='documents') -> None:
-        self.webdriver = Firefox()
+        options = Options()
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        service = Service(GeckoDriverManager().install())
+        self.webdriver = Firefox(options=options, service=service)
         self.documents_dir = documents_dir
 
     def get_document_links(self, search_query, search_pages=10):
