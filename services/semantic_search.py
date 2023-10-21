@@ -2,7 +2,7 @@ import os
 import uuid
 import chromadb
 from chromadb.config import Settings
-from sentence_transformers import SentenceTransformer
+from services.sentence_transformers import SentenceTransformerProvider
 
 class SemanticSearch:
     
@@ -30,7 +30,7 @@ class SemanticSearch:
                 print(e)
                 continue
 
-        self.model = SentenceTransformer(model_name)
+        self.model = SentenceTransformerProvider.get_model(model_name)
 
     def add(self, documents: list[str], ids: list[str] = None):
         embeddings = [self.model.encode(doc).tolist() for doc in documents]

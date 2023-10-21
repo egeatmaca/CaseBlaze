@@ -1,7 +1,8 @@
 var similar_cases = null;
 
 async function query(query_text) {
-    similar_cases = await fetch('/query?query='+encodeURIComponent(query_text));
+    response = await fetch('/query?query='+encodeURIComponent(query_text));
+    similar_cases = JSON.parse(await response.text());
     console.log('Completed: query')
 }
 

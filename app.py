@@ -21,7 +21,7 @@ def index(request: Request):
 @app.get('/query')
 def query(request: Request):
     query = request.query_params.get('query')
-    n_results = request.query_params.get('n_results', 10)
+    n_results = request.query_params.get('n_results', 5)
 
     if not query:
         return Response(status_code=400, content="'query' parameter should be provided!")
