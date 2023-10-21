@@ -7,7 +7,7 @@ async function query(query_text) {
 }
 
 function append_results_title() {
-    var results_title = document.createElement('h2');
+    var results_title = document.createElement('h3');
     results_title.innerText = 'Results:';
     var similar_cases = document.querySelector('#similar-cases');
     similar_cases.appendChild(results_title);
