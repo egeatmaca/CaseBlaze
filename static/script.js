@@ -3,7 +3,6 @@ var similar_cases = null;
 async function query(query_text) {
     response = await fetch('/query?query='+encodeURIComponent(query_text));
     similar_cases = JSON.parse(await response.text());
-    console.log('Completed: query')
 }
 
 function append_results_title() {
@@ -11,7 +10,6 @@ function append_results_title() {
     results_title.innerText = 'Zusammenfassungen der Präzedenzfälle:';
     var similar_cases = document.querySelector('#similar-cases');
     similar_cases.appendChild(results_title);
-    console.log('Completed: append_results_title')
 }
 
 function close_case_modal() {
@@ -52,24 +50,45 @@ function append_case_card(idx, summary) {
 
     var similar_cases = document.querySelector('#similar-cases');
     similar_cases.appendChild(case_card);
-    console.log('Completed: append_case_card')
+}
+
+function append_progress_bar() {
+    var progress_bar_wrapper = document.createElement('div');
+    progress_bar_wrapper.id = 'progress-bar-wrapper'
+    progress_bar_wrapper.innerText = 'Die Anfrage ist in Bearbeitung... Bitte warten.'
+
+    var progress_bar = document.createElement('div');
+    progress_bar.id = 'progress-bar';
+    progress_bar_wrapper.appendChild(progress_bar)
+    
+    var progress_color = document.createElement('div');
+    progress_color.id = 'progress-color';
+    progress_bar.appendChild(progress_color);
+
+    var similar_cases = document.querySelector('#similar-cases');
+    similar_cases.appendChild(progress_bar_wrapper);
+}
+
+function remove_progress_bar() {
+    var loading = document.querySelector('#progress-bar-wrapper');
+    loading.remove();
 }
 
 async function on_submit() {
     var query_text = document.querySelector('#user-case-text')?.value;
     if (query_text == '') return
-    await query(query_text);
     append_results_title();
+    append_progress_bar();
+    await query(query_text);
+    remove_progress_bar();
     for (var i in similar_cases.summaries) {
         append_case_card(i, similar_cases.summaries[i])
     }
-    console.log('Completed: on_submit')
 }
 
 function initialize() {
     var submit_button = document.querySelector('#user-case-submit');
     submit_button.addEventListener('click', on_submit);
-    console.log('Completed: initialize')
 }
 
 document.addEventListener('DOMContentLoaded', initialize);

@@ -109,3 +109,46 @@ input[type="submit"] {
     border-radius: 10px;
     font-weight: bold;
 }
+
+#progress-bar-wrapper {
+    margin-top: 2%;
+    text-align: center;
+    color: #faebd7;
+}
+
+#progress-bar {
+    position: relative;
+    width: 50%;
+    height: 10px;
+    margin: auto;
+    margin-top: 1%;
+    border: solid #ffa331e6;
+    border-radius: 10px;
+}
+
+#progress-color {
+    position: absolute;
+    background-color: #ffa331e6;
+    height: 10px;
+    width: 0px;
+    border-radius: 10px;
+    animation: progress 4s infinite linear;    
+}
+
+@keyframes progress {
+    0%{
+      width: 0%;
+    }
+    25%{
+        width: 50%;
+    }
+    50%{
+        width: 75%;
+    }
+    75%{
+        width: 85%;
+    }
+    100%{
+        width: 100%;
+    }
+};
