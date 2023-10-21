@@ -7,14 +7,16 @@ from services.summarization import ExtractiveSummarizer
 
 
 app = FastAPI()
-# templates = Jinja2Templates(directory='templates')
-# static_files = StaticFiles(directory='static')
-# app.mount('/static', static_files, name='static')
+templates = Jinja2Templates(directory='templates')
+static_files = StaticFiles(directory='static')
+app.mount('/static', static_files, name='static')
 
 semantic_search = SemanticSearch()
 summarizer = ExtractiveSummarizer()
 
-# API
+@app.get('/')
+def index(request: Request):
+    return templates.TemplateResponse('index.html', context={'request': request})
 
 @app.get('/query')
 def query(request: Request):
@@ -30,21 +32,13 @@ def query(request: Request):
         return Response(status_code=400, content="'n_results' parameter should be an integer!")
     
     search_results = semantic_search.query(query, n_results)
-    ids = search_results['ids'][0]
     documents = search_results['documents'][0]
     summaries = [summarizer.summarize(document) for document in documents]
     
     return {
-        'ids': ids,
         'documents': documents,
         'summaries': summaries
     }
-
-
-# VIEWS
-
-
-# RUN APP
 
 def run_app():
     uvicorn.run(app, host='0.0.0.0', port=3000)
