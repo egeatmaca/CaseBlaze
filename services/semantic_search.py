@@ -2,6 +2,7 @@ import os
 import uuid
 import chromadb
 from chromadb.config import Settings
+import time
 from services.sentence_transformers import SentenceTransformerProvider
 
 class SemanticSearch:
@@ -12,6 +13,8 @@ class SemanticSearch:
                  collection: str = 'documents',
                  model_name: str = 'T-Systems-onsite/cross-en-de-roberta-sentence-transformer',
                  similarity: str = 'cosine'):
+        
+        self.model = SentenceTransformerProvider.get_model(model_name)
         
         host = host if host else os.environ.get('CHROMADB_HOST')
         port = port if port else os.environ.get('CHROMADB_PORT')
@@ -28,9 +31,8 @@ class SemanticSearch:
                 break
             except Exception as e:
                 print(e)
+                time.sleep(5)
                 continue
-
-        self.model = SentenceTransformerProvider.get_model(model_name)
 
     def add(self, documents: list[str], ids: list[str] = None):
         embeddings = [self.model.encode(doc).tolist() for doc in documents]

@@ -10,7 +10,7 @@ header {
 }
 
 h3 {
-    margin-bottom: 0%;
+    margin-bottom: 1%;
 }
 
 #app {
@@ -18,8 +18,16 @@ h3 {
     margin: auto;
 }
 
-textarea {
+#user-case-input-wrapper {
     width: 100%;
+    padding-bottom: 5%;
+    background-color: #293a80;
+    border: solid #293a80;
+    border-radius: 10px;
+}
+
+textarea {
+    width: 99%;
     height: 15vh;
     margin-bottom: 1%;
     background-color: #293a80;
@@ -43,10 +51,61 @@ input[type="submit"] {
 }
 
 .case-card {
-    width: 100%;
+    width: 99%;
     margin: 1% 0%;
+    padding: 1%;
+    padding-bottom: 5%;
     background-color: #293a80;
     color: #faebd7;
     border: solid #293a80;
     border-radius: 10px;
+    position: relative;
+}
+
+.open-case-button {
+    position: absolute;
+    right: 1%;
+    padding: 5px;
+    background-color: #ffa331e6;
+    color: #010038;
+    border: solid #ffa331e6;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+#case-modal-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #00000080;
+}
+
+#case-modal {
+    width: 78vw;
+    height: 75vh;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10vh;
+    padding: 1vh 1vw;
+    padding-top: 5vh;
+    background-color: #293a80;
+    color: #faebd7;
+    border: solid #293a80;
+    border-radius: 10px;
+    overflow: scroll;
+    position: relative;
+}
+
+#close-case-button {
+    position: absolute;
+    top: 1vh;
+    right: 1vw;
+    padding: 1px 5px;
+    background-color: #ffa331e6;
+    color: #010038;
+    border: solid #ffa331e6;
+    border-radius: 10px;
+    font-weight: bold;
 }

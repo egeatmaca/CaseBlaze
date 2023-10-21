@@ -2,6 +2,7 @@
 
 <html>
     <head>
+        <title>⚡ BlitzFall</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Work+Sans:ital@0;1&display=swap" rel="stylesheet">
@@ -11,13 +12,15 @@
     <body>
         <div id="app">
             <header>
-                <h1>CaseBlaze</h1>
-                <h2>Research precedent cases with blazing speed!</h2>
+                <h1>⚡ BlitzFall ⚡</h1>
+                <h2>Blitzschnelle Präzedenzfallrecherche!</h2>
             </header>
             <div id="user-case">
-                <h3>Please explain your case as detailed as possible:</h3><br/>
-                <textarea id="user-case-text"></textarea><br/>
-                <input id="user-case-submit" type="submit" value="Research Similar Cases!">
+                <h3>Bitte erläutern Sie Ihren Fall so detailliert wie möglich:</h3>
+                <div id="user-case-input-wrapper">
+                    <textarea id="user-case-text"></textarea><br/>
+                    <input id="user-case-submit" type="submit" value="Recherchieren!">
+                </div>
             </div>
             <div id="similar-cases"></div>
         </div>
