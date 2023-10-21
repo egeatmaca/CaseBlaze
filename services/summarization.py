@@ -26,7 +26,7 @@ class ExtractiveSummarizer:
 
         return pagerank_scores
 
-    def summarize(self, document, n_sentences=5):
+    def summarize(self, document, n_sentences=10):
         # Split the document into sentences
         sentences = nltk.sent_tokenize(document)
 
