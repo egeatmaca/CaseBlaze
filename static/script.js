@@ -74,9 +74,15 @@ function remove_progress_bar() {
     loading.remove();
 }
 
+function clear_results() {
+    var similar_cases = document.querySelector('#similar-cases');
+    similar_cases.innerHTML = '';
+}
+
 async function on_submit() {
     var query_text = document.querySelector('#user-case-text')?.value;
     if (query_text == '') return
+    clear_results();
     append_results_title();
     append_progress_bar();
     await query(query_text);
