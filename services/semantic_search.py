@@ -34,10 +34,13 @@ class SemanticSearch:
                 time.sleep(5)
                 continue
 
-    def add(self, documents: list[str], ids: list[str] = None):
+    def add(self, documents: list[str], metadatas: list[str] = [], ids: list[str] = None):
         embeddings = [self.model.encode(doc).tolist() for doc in documents]
         ids = [str(uuid.uuid4()) for _ in range(len(documents))] if not ids else ids
-        self.collection.add(documents=documents, embeddings=embeddings, ids=ids)
+        self.collection.add(documents=documents, 
+                            embeddings=embeddings, 
+                            metadatas=metadatas,
+                            ids=ids)
 
     def query(self, query_text: str, n_results: int = 1):
         query_embedding = self.model.encode(query_text).tolist()

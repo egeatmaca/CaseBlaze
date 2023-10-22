@@ -33,7 +33,7 @@ def query(request: Request):
     
     search_results = semantic_search.query(query, n_results)
     documents = search_results['documents'][0]
-    summaries = [summarizer.summarize(document) for document in documents]
+    summaries = [metadata['summary'] for metadata in search_results['metadatas'][0]]
     
     return {
         'documents': documents,

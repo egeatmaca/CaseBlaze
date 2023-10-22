@@ -9,7 +9,7 @@ services:
       - .env
     depends_on:
       - chromadb
-    # command: python main.py --scrape-and-inject
+    # command: python main.py --inject-cases
     # command: sleep infinity
 
   chromadb:
