@@ -39,9 +39,10 @@ class CaseScraper:
             for link in document_link_elements:
                 document_links[link.get_attribute('innerText')] = link.get_attribute('href')
 
-            next_page_button = self.webdriver.find_element(By.CSS_SELECTOR, 'td.rechts')
-            if next_page_button:
-                next_page_button.click()
+            next_page_image = self.webdriver.find_element(By.CSS_SELECTOR, 'img[src="/rechtsprechung/bgh/pics/weiter.gif"]')
+            next_page_link = next_page_image.find_element(By.XPATH, '..')
+            if next_page_link and next_page_link.tag_name == 'a':
+                next_page_link.click()
             else:
                 break
 
