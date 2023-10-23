@@ -1,2 +1,2 @@
-# CaseBlaze
- AI assistant for researching precedent legal cases
+# BlitzFall
+KI-Assistent zur Recherche von Präzedenzfällen
