@@ -1,15 +1,14 @@
 import nltk
 from sentence_transformers import util
 import numpy as np
-from services.sentence_transformers import SentenceTransformerProvider
+from services.transformer_factory import TransformerFactory
 
 nltk.download('punkt')
 
 
 class ExtractiveSummarizer:
-
     def __init__(self, model_name='T-Systems-onsite/cross-en-de-roberta-sentence-transformer') -> None:
-        self.model = SentenceTransformerProvider.get_model(model_name)
+        self.model = TransformerFactory.get_model('sentence_transformer', model_name)
 
     def pagerank_scores(self, graph_matrix, damping_factor=0.85, max_iterations=100, tol=1e-6):
         row_sums = graph_matrix.sum(axis=1, keepdims=True)
@@ -56,4 +55,47 @@ class ExtractiveSummarizer:
         
         summary = ' '.join(most_central_sentences)
 
+        return summary
+
+
+class AbstractiveSummarizer:
+    def __init__(self, 
+                 factory_func_name='bart_for_conditional_generation', 
+                 model_name='Shahm/bart-german') -> None:
+        self.model = TransformerFactory.get_model(factory_func_name, model_name)
+        self.tokenizer = TransformerFactory.get_tokenizer(model_name)
+
+    def chunk_text(self, text, max_input_length=200):
+        words = text.split(' ')
+        chunks = []
+        chunk_start = 0
+        chunk_end = max_input_length
+        while chunk_start < len(words):
+            chunk_words = words[chunk_start:chunk_end]
+            chunk = ' '.join(chunk_words)
+            chunks.append(chunk)
+            chunk_start = chunk_end
+            chunk_end += max_input_length
+        return chunks
+
+    def summarize_chunk(self, chunk, max_output_length=50):
+        # Add summary prefix to text
+        chunk = 'zusammenfassen: ' + chunk
+
+        # Get input tokens
+        inputs = self.tokenizer([chunk], return_tensors="pt")
+
+        # Generate text using tokens
+        outputs = self.model.generate(inputs['input_ids'], max_length=max_output_length)
+
+        # Decode tokens
+        summary = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)[0]
+        
+        return summary[0]
+
+    def summarize(self, text, max_input_length=300, max_output_length=75):
+        chunks = self.chunk_text(text=text, max_input_length=max_input_length)
+        chunk_summaries = [self.summarize_chunk(chunk, max_output_length=max_output_length)
+                           for chunk in chunks]
+        summary = ' '.join(chunk_summaries)
         return summary

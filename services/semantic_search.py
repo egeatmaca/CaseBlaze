@@ -3,7 +3,7 @@ import uuid
 import chromadb
 from chromadb.config import Settings
 import time
-from services.sentence_transformers import SentenceTransformerProvider
+from services.transformer_factory import TransformerFactory
 
 class SemanticSearch:
     
@@ -14,7 +14,7 @@ class SemanticSearch:
                  model_name: str = 'T-Systems-onsite/cross-en-de-roberta-sentence-transformer',
                  similarity: str = 'cosine'):
         
-        self.model = SentenceTransformerProvider.get_model(model_name)
+        self.model = TransformerFactory.get_model('sentence_transformer', model_name)
         
         host = host if host else os.environ.get('CHROMADB_HOST')
         port = port if port else os.environ.get('CHROMADB_PORT')
