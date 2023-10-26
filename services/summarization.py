@@ -65,7 +65,7 @@ class AbstractiveSummarizer:
         self.model = TransformerFactory.get_model(factory_func_name, model_name)
         self.tokenizer = TransformerFactory.get_tokenizer(model_name)
 
-    def chunk_text(self, text, max_input_length=200):
+    def chunk_text(self, text, max_input_length=300):
         words = text.split(' ')
         chunks = []
         chunk_start = 0
@@ -78,7 +78,7 @@ class AbstractiveSummarizer:
             chunk_end += max_input_length
         return chunks
 
-    def summarize_chunk(self, chunk, max_output_length=50):
+    def summarize_chunk(self, chunk, max_output_length=75):
         # Add summary prefix to text
         chunk = 'zusammenfassen: ' + chunk
 
