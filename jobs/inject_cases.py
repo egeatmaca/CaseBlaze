@@ -5,9 +5,11 @@ from services.summarization import ExtractiveSummarizer
 
 
 def inject_cases():
-    scraper = CaseScraper()
-    scraper.scrape_cases()
-    
+    documents_dir = 'documents'
+    search_pages = 1 if os.path.exists(documents_dir) else 50
+    scraper = CaseScraper(documents_dir=documents_dir)
+    scraper.scrape_cases(search_pages=search_pages)
+
     semantic_search = SemanticSearch()
     summarizer = ExtractiveSummarizer()
     for doc_name in os.listdir(scraper.documents_dir):
