@@ -23,3 +23,4 @@ def inject_cases():
                 metadatas = [{'summary': summary}],
                 ids = [doc_id]
             )
+        print(f'Document {doc_id} injected!')

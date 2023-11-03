@@ -11,7 +11,7 @@ class SemanticSearch:
                  host: str = None, 
                  port: int = None, 
                  collection: str = 'documents',
-                 model_name: str = 'T-Systems-onsite/cross-en-de-roberta-sentence-transformer',
+                 model_name: str = 'bert-base-german-cased',
                  similarity: str = 'cosine'):
         
         self.model = TransformerFactory.get_model('sentence_transformer', model_name)

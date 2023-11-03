@@ -7,7 +7,7 @@ nltk.download('punkt')
 
 
 class ExtractiveSummarizer:
-    def __init__(self, model_name='T-Systems-onsite/cross-en-de-roberta-sentence-transformer') -> None:
+    def __init__(self, model_name='bert-base-german-cased') -> None:
         self.model = TransformerFactory.get_model('sentence_transformer', model_name)
 
     def pagerank_scores(self, graph_matrix, damping_factor=0.85, max_iterations=100, tol=1e-6):
@@ -17,7 +17,7 @@ class ExtractiveSummarizer:
         pagerank_scores = np.ones(num_nodes) / num_nodes
 
         for _ in range(max_iterations):
-            new_pagerank = (1 - damping_factor) / num_nodes + damping_factor * np.dot(transition_matrix, pagerank_scores)
+            new_pagerank = (1 - damping_factor) / num_nodes + damping_factor * np.dot(transition_matrix.T, pagerank_scores)
 
             if np.linalg.norm(new_pagerank - pagerank_scores) < tol:
                 return new_pagerank
