@@ -60,8 +60,8 @@ class ExtractiveSummarizer:
 
 class AbstractiveSummarizer:
     def __init__(self, 
-                 factory_func_name='bart_for_conditional_generation', 
-                 model_name='Shahm/bart-german') -> None:
+                 factory_func_name='auto_model_seq_2_seq', 
+                 model_name='GermanT5/t5-efficient-gc4-all-german-large-nl36') -> None:
         self.model = TransformerFactory.get_model(factory_func_name, model_name)
         self.tokenizer = TransformerFactory.get_tokenizer(model_name)
 
