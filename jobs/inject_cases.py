@@ -1,17 +1,17 @@
 import os
 from services.scraping import CaseScraper
 from services.semantic_search import SemanticSearch
-from services.summarization import ExtractiveSummarizer
+from services.summarization import ExtractiveSummarizer, AbstractiveSummarizer
 
 
-def inject_cases():
+def inject_cases(summarization='extractive'):
     documents_dir = 'documents'
     search_pages = 1 if os.path.exists(documents_dir) else 50
     scraper = CaseScraper(documents_dir=documents_dir)
     scraper.scrape_cases(search_pages=search_pages)
 
     semantic_search = SemanticSearch()
-    summarizer = ExtractiveSummarizer()
+    summarizer = ExtractiveSummarizer() if summarization == 'extractive' else AbstractiveSummarizer()
     for doc_name in os.listdir(scraper.documents_dir):
         doc_path = os.path.join(scraper.documents_dir, doc_name)
         doc_id = doc_name.replace('.txt', '').strip()
