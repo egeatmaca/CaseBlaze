@@ -2,6 +2,7 @@ import nltk
 from sentence_transformers import util
 import numpy as np
 from services.transformer_factory import TransformerFactory
+from gpt4all import GPT4All
 
 nltk.download('punkt')
 
@@ -59,43 +60,49 @@ class ExtractiveSummarizer:
 
 
 class AbstractiveSummarizer:
-    def __init__(self, 
-                 factory_func_name='auto_model_seq_2_seq', 
-                 model_name='GermanT5/t5-efficient-gc4-all-german-large-nl36') -> None:
-        self.model = TransformerFactory.get_model(factory_func_name, model_name)
-        self.tokenizer = TransformerFactory.get_tokenizer(model_name)
+    def __init__(self, model_name='mistral-7b-instruct-v0.1.Q4_0') -> None:
+        self.model_name = model_name
+        self.model = GPT4All(model_name=model_name, n_threads=4)
 
-    def chunk_text(self, text, max_input_length=500):
-        words = text.split(' ')
+    def summarize(self, text, max_tokens=100):
+        return self.model.generate('Zusammenfassen: ' + text, max_tokens=max_tokens)
+
+    def chunk_text(self, text, chunk_size=500):
         chunks = []
-        chunk_start = 0
-        chunk_end = max_input_length
-        while chunk_start < len(words):
-            chunk_words = words[chunk_start:chunk_end]
-            chunk = ' '.join(chunk_words)
-            chunks.append(chunk)
-            chunk_start = chunk_end
-            chunk_end += max_input_length
+
+        current_chunk = ''
+        for i, word in enumerate(nltk.wordpunct_tokenize(text)):
+            current_chunk += word + ' '
+            if (i + 1) % chunk_size == 0:
+                current_chunk = current_chunk.strip()
+                chunks.append(current_chunk)
+                current_chunk = ''
+
+        if current_chunk != '':
+            current_chunk = current_chunk.strip()
+            chunks.append(current_chunk)
+
+        print('Chunks:', chunks)
+
         return chunks
-
-    def summarize_chunk(self, chunk, max_output_length=100):
-        # Add summary prefix to text
-        chunk = 'zusammenfassen: ' + chunk
-
-        # Get input tokens
-        inputs = self.tokenizer([chunk], return_tensors="pt")
-
-        # Generate text using tokens
-        outputs = self.model.generate(inputs['input_ids'], max_length=max_output_length)
-
-        # Decode tokens
-        summary = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)[0]
-        
-        return summary[0]
-
-    def summarize(self, text, max_input_length=500, max_output_length=100):
-        chunks = self.chunk_text(text=text, max_input_length=max_input_length)
-        chunk_summaries = [self.summarize_chunk(chunk, max_output_length=max_output_length)
-                           for chunk in chunks]
-        summary = ' '.join(chunk_summaries)
+    
+    def summarize_long_text(self, text, chunk_size=500, max_tokens=50):
+        chunks = self.chunk_text(text, chunk_size=chunk_size)
+        summary = ''
+        for chunk in chunks:
+            summary += self.summarize(chunk, max_tokens=max_tokens) + ' '
         return summary
+    
+
+if __name__ == '__main__':
+    # Test extractive summarizer
+    summarizer = AbstractiveSummarizer()
+    
+    # Read a document
+    with open('./documents/I ZB 108-22.txt', 'r') as f:
+        document = f.read()
+    
+    summary = summarizer.summarize_long_text(document)
+    print(summary)
+
+
