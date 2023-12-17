@@ -64,7 +64,7 @@ class AbstractiveSummarizer:
         self.model_name = model_name
         self.model = GPT4All(model_name=model_name, n_threads=4)
 
-    def summarize(self, text, max_tokens=100):
+    def _summarize(self, text, max_tokens=100):
         return self.model.generate('Zusammenfassen: ' + text, max_tokens=max_tokens)
 
     def chunk_text(self, text, chunk_size=500):
@@ -86,11 +86,11 @@ class AbstractiveSummarizer:
 
         return chunks
     
-    def summarize_long_text(self, text, chunk_size=500, max_tokens=50):
+    def summarize(self, text, chunk_size=500, max_tokens=50):
         chunks = self.chunk_text(text, chunk_size=chunk_size)
         summary = ''
         for chunk in chunks:
-            summary += self.summarize(chunk, max_tokens=max_tokens) + ' '
+            summary += self._summarize(chunk, max_tokens=max_tokens) + ' '
         return summary
     
 
