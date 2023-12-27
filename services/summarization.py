@@ -3,6 +3,7 @@ from sentence_transformers import util
 import numpy as np
 from services.transformer_factory import TransformerFactory
 from gpt4all import GPT4All
+from sklearn_extra.cluster import KMedoids
 
 nltk.download('punkt')
 
@@ -26,8 +27,15 @@ class ExtractiveSummarizer:
             pagerank_scores = new_pagerank
 
         return pagerank_scores
+    
+    def cluster_sentences(self, embeddings, n_clusters=10):
+        kmedoids = KMedoids(n_clusters=n_clusters, metric='cosine', init='k-medoids++')
+        kmedoids.fit(embeddings)
+        clusters = kmedoids.predict(embeddings)
+        cluster_centers = kmedoids.cluster_centers_
+        return clusters, cluster_centers
 
-    def summarize(self, document, n_sentences=10):
+    def summarize_with_pagerank(self, document, n_sentences=10):
         # Split the document into sentences
         sentences = nltk.sent_tokenize(document)
 
@@ -57,6 +65,49 @@ class ExtractiveSummarizer:
         summary = ' '.join(most_central_sentences)
 
         return summary
+    
+    def summarize_with_clustering(self, document, n_sentences=10):
+        # Split the document into sentences
+        sentences = nltk.sent_tokenize(document)
+
+        # Update n_sentences if greater than the number of sentences
+        n_sentences = np.min([n_sentences, len(sentences)])
+
+        # Compute the sentence embeddings
+        embeddings = self.model.encode(sentences, convert_to_tensor=True)
+
+        # Compute clusters
+        clusters, cluster_centers = self.cluster_sentences(embeddings, n_clusters=n_sentences)
+
+        # Get the most central indices
+        most_central_sentence_indices = []
+        for cluster_idx in range(n_sentences):
+            cluster_indices = np.where(clusters == cluster_idx)[0]
+            cluster_embeddings = embeddings[cluster_indices].numpy().astype(np.float32)
+            cluster_center = cluster_centers[cluster_idx].reshape(1, -1).astype(np.float32)
+            cluster_cosine_similarities = util.cos_sim(cluster_embeddings, cluster_center).numpy()
+            cluster_most_central_idx = cluster_indices[np.argmax(cluster_cosine_similarities)]
+            most_central_sentence_indices.append(cluster_most_central_idx)
+
+        # Sort most central indices chronologically
+        most_central_sentence_indices = np.sort(most_central_sentence_indices)
+
+        # Concatenate the most central sentences
+        most_central_sentences = []
+        for idx in most_central_sentence_indices:
+            most_central_sentences.append(sentences[idx].strip())
+
+        summary = ' '.join(most_central_sentences)
+
+        return summary
+    
+    def summarize(self, document, n_sentences=10, method='clustering'):
+        if method == 'pagerank':
+            return self.summarize_with_pagerank(document, n_sentences)
+        elif method == 'clustering':
+            return self.summarize_with_clustering(document, n_sentences)
+        else:
+            raise ValueError('Invalid summarization method')
 
 
 class AbstractiveSummarizer:
